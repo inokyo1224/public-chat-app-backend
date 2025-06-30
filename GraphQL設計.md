@@ -14,7 +14,7 @@
 
 | フィールド | 型       | 必須 | 説明                     |
 | ---------- | -------- | ---- | ------------------------ |
-| id         | Int      | ✓    | ルームの一意識別子       |
+| id         | ID       | ✓    | ルームの一意識別子       |
 | name       | String   | -    | ルーム名（nullable）     |
 | isGroup    | Boolean  | ✓    | グループチャットかどうか |
 | createdAt  | DateTime | ✓    | 作成日時                 |
@@ -26,7 +26,7 @@
 
 | フィールド | 型     | 必須 | 説明                 |
 | ---------- | ------ | ---- | -------------------- |
-| id         | Int    | ✓    | ユーザーの一意識別子 |
+| id         | ID     | ✓    | ユーザーの一意識別子 |
 | name       | String | ✓    | ユーザー名           |
 
 #### Message
@@ -35,9 +35,9 @@
 
 | フィールド | 型       | 必須 | 説明                   |
 | ---------- | -------- | ---- | ---------------------- |
-| id         | Int      | ✓    | メッセージの一意識別子 |
-| roomId     | Int      | ✓    | 所属ルーム ID          |
-| userId     | Int      | ✓    | 送信者のユーザー ID    |
+| id         | ID       | ✓    | メッセージの一意識別子 |
+| roomId     | ID       | ✓    | 所属ルーム ID          |
+| userId     | ID       | ✓    | 送信者のユーザー ID    |
 | content    | String   | ✓    | メッセージ内容         |
 | createdAt  | DateTime | ✓    | 作成日時               |
 | updatedAt  | DateTime | ✓    | 更新日時               |
@@ -54,7 +54,7 @@ UTC 形式の日時文字列（例：2019-12-03T09:54:33Z）を表現するカ�
 #### messagesByRoomId
 
 ```graphql
-messagesByRoomId(roomId: Int!): [Message!]!
+messagesByRoomId(roomId: ID!): [Message!]!
 ```
 
 指定されたルーム ID のメッセージ一覧を取得します。
@@ -70,15 +70,15 @@ messagesByRoomId(roomId: Int!): [Message!]!
   "data": {
     "messagesByRoomId": [
       {
-        "id": 1,
-        "roomId": 1,
-        "userId": 1,
+        "id": "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx",
+        "roomId": "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx",
+        "userId": "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx",
         "content": "こんにちは！",
         "createdAt": "2024-01-01T10:00:00Z",
         "updatedAt": "2024-01-01T10:00:00Z",
         "deletedAt": null,
         "user": {
-          "id": 1,
+          "id": "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx",
           "name": "大谷翔平"
         }
       }
@@ -90,7 +90,7 @@ messagesByRoomId(roomId: Int!): [Message!]!
 #### myRooms
 
 ```graphql
-myRooms(userId: Int!): [Room!]!
+myRooms(userId: ID!): [Room!]!
 ```
 
 指定されたユーザーが参加しているルーム一覧を取得します。
@@ -106,7 +106,7 @@ myRooms(userId: Int!): [Room!]!
   "data": {
     "myRooms": [
       {
-        "id": 1,
+        "id": "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx",
         "name": "鈴木一朗",
         "isGroup": true,
         "createdAt": "2024-01-01T09:00:00Z",
@@ -130,8 +130,8 @@ createMessage(input: CreateMessageInput!): Message!
 **入力型（CreateMessageInput）：**
 | フィールド | 型 | 必須 | 説明 |
 |-----------|---|------|------|
-| roomId | Int | ✓ | 送信先ルーム ID |
-| userId | Int | ✓ | 送信者ユーザー ID |
+| roomId | ID | ✓ | 送信先ルーム ID |
+| userId | ID | ✓ | 送信者ユーザー ID |
 | content | String | ✓ | メッセージ内容 |
 
 **リクエスト例：**
@@ -139,7 +139,11 @@ createMessage(input: CreateMessageInput!): Message!
 ```graphql
 mutation {
   createMessage(
-    input: { roomId: 1, userId: 1, content: "新しいメッセージです" }
+    input: {
+      roomId: "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx"
+      userId: "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx"
+      content: "新しいメッセージです"
+    }
   ) {
     id
     content
@@ -157,7 +161,7 @@ mutation {
 {
   "data": {
     "createMessage": {
-      "id": 2,
+      "id": "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx",
       "content": "新しいメッセージです",
       "createdAt": "2024-01-01T10:30:00Z",
       "user": {
