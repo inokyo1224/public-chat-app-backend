@@ -19,7 +19,6 @@ RUN usermod -u ${LOCAL_UID} node && groupmod -g ${LOCAL_GID} node
 
 USER node
 
-# Create app directory
 WORKDIR /usr/src/app
 
 USER root
@@ -29,6 +28,8 @@ USER node
 
 COPY --chown=node:node package*.json ./
 
+# 「--legacy-peer-deps」を使用して、依存関係の競合を回避
+# graphql-subscriptions@1.2.1とgraphql@16.11.0の互換性の問題を解決
 RUN npm ci --legacy-peer-deps
 
 COPY --chown=node:node . .
@@ -42,6 +43,8 @@ USER node
 
 EXPOSE 3000
 
+# マルチステージビルド
+# 今の所は不要だがデプロイ時にもしかしたら使うかも
 FROM base AS local
 ENV NODE_ENV development
 CMD ["npm", "run", "start:dev"]
