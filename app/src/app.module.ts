@@ -2,7 +2,12 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { HelloModule } from './hello/hello.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+import { UserModule } from './user/user.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { MessageModule } from './message/message.module';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -15,7 +20,15 @@ import { HelloModule } from './hello/hello.module';
         'subscriptions-transport-ws': false,
       },
     }),
-    HelloModule,
+    AuthModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'default_secret',
+      signOptions: { expiresIn: '1d' },
+    }),
+    UserModule,
+    PrismaModule,
+    MessageModule,
+    RoomModule,
   ],
 })
 export class AppModule {}
