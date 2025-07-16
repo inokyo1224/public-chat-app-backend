@@ -34,8 +34,7 @@ RUN npm ci --legacy-peer-deps
 
 COPY --chown=node:node . .
 
-# prismaの設定をアプリ側で実装してからコメントアウトを外す
-# RUN npx prisma generate
+RUN npx prisma generate
 
 RUN npm run build
 
