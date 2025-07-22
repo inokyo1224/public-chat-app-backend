@@ -2,10 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type AuthPayload {
-  accessToken: String!
-}
-
 type User {
   id: ID!
   name: String!
@@ -52,6 +48,10 @@ type Message {
   room: Room
 }
 
+type AuthPayload {
+  accessToken: String!
+}
+
 type Query {
   me: User!
   messagesByRoomId(roomId: ID!): [Message!]!
@@ -78,6 +78,7 @@ input CreateUserInput {
 
 input CreateMessageInput {
   roomId: ID!
+  userId: ID
   content: String!
 }
 

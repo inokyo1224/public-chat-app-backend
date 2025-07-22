@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
-import { UserModule } from './user/user.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { MessageModule } from './message/message.module';
-import { RoomModule } from './room/room.module';
+import { UserModule } from './modules/user/user.module';
+import { PrismaModule } from './shared/prisma/prisma.module';
+import { MessageModule } from './modules/message/message.module';
+import { RoomModule } from './modules/room/room.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
