@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "./ER図.md" // 出力ファイルのパス
+  title    = "データベースER図"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// ユーザ
+model User {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  rooms            RoomUser[]
+  messages         Message[]
+  messageReads     MessageRead[]
+  messageReactions MessageReaction[]
+  messageMentions  MessageMention[]
+
+  @@map("user")
+}
+
+/// チャットルーム
+model Room {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String? // グループ名（個人チャットはNULL）
+  isGroup   Boolean   @map("is_group") // true: グループ, false: 個人 
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  roomUsers RoomUser[]
+  messages  Message[]
+
+  @@map("room")
+}
+
+/// チャットルーム参加者
+model RoomUser {
+  id        String    @id @default(uuid()) @db.Uuid
+  roomId    String    @map("room_id") @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  room Room @relation(fields: [roomId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([roomId, userId])
+  @@map("room_user")
+}
+
+/// メッセージ
+model Message {
+  id        String    @id @default(uuid()) @db.Uuid
+  roomId    String    @map("room_id") @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  content   String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  room             Room              @relation(fields: [roomId], references: [id])
+  user             User              @relation(fields: [userId], references: [id])
+  messageReads     MessageRead[]
+  messageReactions MessageReaction[]
+  messageMentions  MessageMention[]
+
+  @@map("message")
+}
+
+/// 既読管理
+model MessageRead {
+  id        String    @id @default(uuid()) @db.Uuid
+  messageId String    @map("message_id") @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  message Message @relation(fields: [messageId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([messageId, userId])
+  @@map("message_read")
+}
+
+/// リアクション
+model MessageReaction {
+  id        String    @id @default(uuid()) @db.Uuid
+  messageId String    @map("message_id") @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  type      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  message Message @relation(fields: [messageId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([messageId, userId, type])
+  @@map("message_reaction")
+}
+
+/// メンション
+model MessageMention {
+  id              String    @id @default(uuid()) @db.Uuid
+  messageId       String    @map("message_id") @db.Uuid
+  mentionedUserId String    @map("mentioned_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  message       Message @relation(fields: [messageId], references: [id])
+  mentionedUser User    @relation(fields: [mentionedUserId], references: [id])
+
+  @@map("message_mention")
+}

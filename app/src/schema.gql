@@ -2,6 +2,91 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthPayload {
+  accessToken: String!
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type RoomUser {
+  id: ID!
+  roomId: ID!
+  userId: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  user: User
+  room: Room
+}
+
+type Room {
+  id: ID!
+  name: String
+  isGroup: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  roomUsers: [RoomUser!]
+}
+
+type Message {
+  id: ID!
+  roomId: ID!
+  userId: ID!
+  content: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  user: User
+  room: Room
+}
+
 type Query {
-  helloGraphQL: String!
+  me: User!
+  messagesByRoomId(roomId: ID!): [Message!]!
+  myRooms: [Room!]!
+}
+
+type Mutation {
+  login(input: LoginInput!): AuthPayload!
+  createUser(input: CreateUserInput!): User!
+  createMessage(input: CreateMessageInput!): Message!
+  createRoom(input: CreateRoomInput!): Room!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input CreateMessageInput {
+  roomId: ID!
+  content: String!
+}
+
+input CreateRoomInput {
+  name: String
+  isGroup: Boolean!
+  userIds: [ID!]!
+}
+
+type Subscription {
+  messageSent: Message!
 }
