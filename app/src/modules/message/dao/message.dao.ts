@@ -52,6 +52,10 @@ export class MessageDao implements IMessageDao {
         userId: input.userId,
         content: input.content,
       },
+      include: {
+        user: true,
+        room: true,
+      },
     });
   }
 }

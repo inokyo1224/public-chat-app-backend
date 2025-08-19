@@ -89,5 +89,5 @@ input CreateRoomInput {
 }
 
 type Subscription {
-  messageSent: Message!
+  messageSent(roomId: ID!): Message!
 }
