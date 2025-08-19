@@ -48,7 +48,9 @@ export class MessageResolver {
     };
     const message = this.createMessageUseCase.create(inputWithUserId);
 
-    this.pubSub.publish('messageSent', { messageSent: message });
+    this.pubSub.publish(`messageSent:${input.roomId}`, {
+      messageSent: message,
+    });
 
     return message;
   }
@@ -56,7 +58,9 @@ export class MessageResolver {
   @Subscription(() => Message, {
     resolve: (payload) => payload.messageSent,
   })
-  messageSent() {
-    return this.pubSub.asyncIterator('messageSent');
+  messageSent(
+    @Args('roomId', { type: () => ID }) roomId: string,
+  ): AsyncIterator<Message> {
+    return this.pubSub.asyncIterator(`messageSent:${roomId}`);
   }
 }
